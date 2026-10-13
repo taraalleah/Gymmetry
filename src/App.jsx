@@ -53,6 +53,8 @@ export default function App() {
     setTab('home')
   }
 
+  const deleteLog = (id) => setData((d) => ({ ...d, logs: d.logs.filter((l) => l.id !== id) }))
+
   // While working out, the workout screen takes over (no bottom nav)
   if (playing) {
     return (
@@ -64,7 +66,7 @@ export default function App() {
   if (editing) {
     page = <WorkoutEditor workout={editing} onSave={saveWorkout} onCancel={() => setEditing(null)} onDelete={deleteWorkout} />
   } else if (tab === 'home') {
-    page = <Home profile={profile} logs={logs} palette={palette} color={color} onStart={() => setTab('pick')} />
+    page = <Home profile={profile} logs={logs} palette={palette} color={color} onStart={() => setTab('pick')} onDelete={deleteLog} />
   } else if (tab === 'pick') {
     page = <Workouts workouts={workouts} onStart={setPlaying} onEdit={setEditing} />
   } else {

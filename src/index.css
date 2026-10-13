@@ -43,3 +43,8 @@ nav button.on{color:var(--ink)}
 @keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
 .hop{display:inline-block;animation:hop .8s ease-in-out 3}
 @media (prefers-reduced-motion:reduce){.hop{animation:none}}
+
+/* Mascot picker: 5 equal columns that shrink to fit narrow phones */
+.shapes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.shapes .chip{padding:6px;display:flex;justify-content:center}
+.shapes svg{width:100%;height:auto;max-width:44px}

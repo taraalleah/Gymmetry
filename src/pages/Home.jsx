@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Mascot from '../components/Mascot'
 import { dateKey, formatTime, moodFromStars } from '../utils/helpers'
 
-export default function Home({ profile, logs, palette, color, onStart }) {
+export default function Home({ profile, logs, palette, color, onStart, onDelete }) {
   // Which month the calendar shows, and which day was tapped
   const [month, setMonth] = useState(() => {
     const now = new Date()
@@ -121,6 +121,18 @@ export default function Home({ profile, logs, palette, color, onStart }) {
               <div>{selectedLog.name} · {formatTime(selectedLog.secs)} · {'⭐'.repeat(selectedLog.stars)}</div>
               <div className="soft">{selectedLog.walked ? 'Hit the step goal' : 'Missed the step goal'}</div>
               {selectedLog.note && <p style={{ whiteSpace: 'pre-wrap' }}>{selectedLog.note}</p>}
+              <button
+                className="btn sec"
+                style={{ marginBottom: 0, marginTop: 8 }}
+                onClick={() => {
+                  if (confirm('Delete this entry?')) {
+                    onDelete(selectedLog.id)
+                    setSelected(null)
+                  }
+                }}
+              >
+                Delete entry
+              </button>
             </div>
           ) : (
             <div className="soft">No workout logged.</div>

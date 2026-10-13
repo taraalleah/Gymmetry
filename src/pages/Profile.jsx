@@ -26,16 +26,16 @@ export default function Profile({ profile, palette, onChange }) {
 
       <div className="card">
         <h2>Pick your buddy</h2>
-        <div className="row sp">
+        <div className="shapes">
           {SHAPES.map((shape) => (
             <button
               key={shape}
               aria-label={shape}
               className={'chip ' + (profile.shape === shape ? 'on' : '')}
-              style={{ '--c': 'var(--line)', padding: 5 }}
+              style={{ '--c': 'var(--line)' }}
               onClick={() => onChange({ shape })}
             >
-              <Mascot shape={shape} color={palette.colors[profile.color]} mood={profile.shape === shape ? 'cheer' : 'happy'} size={46} />
+              <Mascot shape={shape} color={palette.colors[profile.color]} mood={profile.shape === shape ? 'cheer' : 'happy'} size={40} />
             </button>
           ))}
         </div>
