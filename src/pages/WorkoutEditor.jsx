@@ -6,17 +6,42 @@ const emptyForm = { name: '', mode: 'reps', sets: 2, reps: '8-12', secs: 30, wei
 export default function WorkoutEditor({ workout, onSave, onCancel, onDelete }) {
   const [draft, setDraft] = useState(workout) // the workout being edited
   const [form, setForm] = useState(emptyForm) // the "add exercise" form
+  const [editingExerciseId, setEditingExerciseId] = useState(null)
 
   const setField = (field, value) => setForm({ ...form, [field]: value })
 
-  const addExercise = () => {
-    if (!form.name.trim()) return
-    const exercise = { ...form, id: uid(), name: form.name.trim(), note: '' }
-    setDraft({ ...draft, exercises: [...draft.exercises, exercise] })
-    setForm({ ...form, name: '' })
+  const resetExerciseForm = () => {
+    setForm(emptyForm)
+    setEditingExerciseId(null)
   }
 
-  const removeExercise = (id) => setDraft({ ...draft, exercises: draft.exercises.filter((e) => e.id !== id) })
+  const editExercise = (exercise) => {
+    setForm({ ...emptyForm, ...exercise })
+    setEditingExerciseId(exercise.id)
+  }
+
+  const saveExercise = () => {
+    if (!form.name.trim()) return
+    if (editingExerciseId) {
+      setDraft({
+        ...draft,
+        exercises: draft.exercises.map((exercise) =>
+          exercise.id === editingExerciseId
+            ? { ...exercise, ...form, id: exercise.id, name: form.name.trim() }
+            : exercise
+        ),
+      })
+    } else {
+      const exercise = { ...form, id: uid(), name: form.name.trim(), note: '' }
+      setDraft({ ...draft, exercises: [...draft.exercises, exercise] })
+    }
+    resetExerciseForm()
+  }
+
+  const removeExercise = (id) => {
+    setDraft({ ...draft, exercises: draft.exercises.filter((e) => e.id !== id) })
+    if (editingExerciseId === id) resetExerciseForm()
+  }
 
   return (
     <div>
@@ -40,13 +65,16 @@ export default function WorkoutEditor({ workout, onSave, onCancel, onDelete }) {
                 {e.mode === 'time' ? `${e.sets} rounds × ${e.secs}s` : `${e.sets} sets × ${e.reps} reps`}
               </div>
             </div>
-            <button className="x" aria-label={'Remove ' + e.name} onClick={() => removeExercise(e.id)}>✕</button>
+            <div className="row">
+              <button className="chip" onClick={() => editExercise(e)}>Edit</button>
+              <button className="x" aria-label={'Remove ' + e.name} onClick={() => removeExercise(e.id)}>✕</button>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="card">
-        <h2>Add exercise</h2>
+        <h2>{editingExerciseId ? 'Edit exercise' : 'Add exercise'}</h2>
         <label htmlFor="en">Name</label>
         <input id="en" value={form.name} onChange={(e) => setField('name', e.target.value)} placeholder="Squats" />
 
@@ -77,7 +105,10 @@ export default function WorkoutEditor({ workout, onSave, onCancel, onDelete }) {
           <button className={'chip ' + (form.weighted ? 'on' : '')} onClick={() => setField('weighted', !form.weighted)}>🏋️ Weighted</button>
           <button className={'chip ' + (form.extra ? 'on' : '')} onClick={() => setField('extra', !form.extra)}>✨ Extra</button>
         </div>
-        <button className="btn sec" onClick={addExercise}>Add to workout</button>
+        <button className="btn sec" onClick={saveExercise}>
+          {editingExerciseId ? 'Update exercise' : 'Add to workout'}
+        </button>
+        {editingExerciseId && <button className="btn sec" onClick={resetExerciseForm}>Cancel edit</button>}
       </div>
 
       <button className="btn col" disabled={!draft.name.trim() || draft.exercises.length === 0} onClick={() => onSave(draft)}>
